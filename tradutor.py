@@ -13,9 +13,6 @@ def carregar_arquivo():
         filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
     )
     if file_path:
-        # Remove duplicação de extensão .txt, se houver
-        if file_path.endswith(".txt.txt"):
-            file_path = file_path[:-4]  # Remove os últimos 4 caracteres (.txt)
         label_arquivo.config(text=f"Arquivo selecionado: {file_path}")
 
 def traduzir():
@@ -25,7 +22,7 @@ def traduzir():
         subscription_key = "f886c1557d2740ad9a22803188db360a"  # Insira sua chave de assinatura
         endpoint = "https://api.cognitive.microsofttranslator.com/"  # Insira seu endpoint da API
         location = "westus2"  # Insira a localização da API
-        target_language = "pt-br"  # Idioma de destino
+        target_lang = "pt-br"  # Idioma de destino
 
         # Função de tradução usando a API
         def translator_text(text, target_language="pt-br"):
@@ -47,21 +44,31 @@ def traduzir():
             response = request.json()
             return response[0]["translations"][0]["text"]
 
-        # Lê o conteúdo do arquivo .txt original
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+        full_translated_text = []
 
-        # Traduz cada linha do arquivo
-        translated_lines = [translator_text(line, target_language) for line in lines]
+        # Ler o conteúdo do arquivo e traduzir cada linha
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                for paragraph in file:
+                    translated_text = translator_text(paragraph.strip(), target_lang)
+                    full_translated_text.append(translated_text)
 
-        # Define o caminho para salvar o arquivo traduzido
-        path_translated = file_path.replace(".txt", f"_{target_language}.txt")
-        with open(path_translated, 'w', encoding='utf-8') as file:
-            file.writelines("%s\n" % line for line in translated_lines)
+            # Exibir o texto traduzido (para teste)
+            for line in full_translated_text:
+                print(line)
 
-        messagebox.showinfo("Sucesso", f"Arquivo traduzido salvo como: {path_translated}")
-    else:
-        messagebox.showwarning("Aviso", "Nenhum arquivo selecionado para traduzir. Escolha um arquivo do tipo txt!")
+            # Salvar o texto traduzido em um novo arquivo
+            translated_file_path = file_path.replace(".txt", "_translated.txt")
+            with open(translated_file_path, 'w', encoding='utf-8') as translated_file:
+                for line in full_translated_text:
+                    translated_file.write(line + "\n")
+
+            print(f"O texto traduzido foi salvo em {translated_file_path}")
+            messagebox.showinfo("Sucesso", f"O texto traduzido foi salvo em {translated_file_path}")
+        
+        except Exception as e:
+            print(f"Erro ao processar o arquivo: {e}")
+            messagebox.showerror("Erro", f"Erro ao processar o arquivo: {e}")
 
 # Configuração da janela principal
 window = tk.Tk()
