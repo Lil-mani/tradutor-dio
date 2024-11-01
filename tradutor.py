@@ -19,7 +19,7 @@ def traduzir():
     if file_path:
         print("Temos um path -> {}".format(file_path))
 
-        subscription_key = "f886c1557d2740ad9a22803188db360a"  # Insira sua chave de assinatura
+        subscription_key = ""  # Insira sua chave de assinatura
         endpoint = "https://api.cognitive.microsofttranslator.com/"  # Insira seu endpoint da API
         location = "westus2"  # Insira a localização da API
         target_lang = "pt-br"  # Idioma de destino
